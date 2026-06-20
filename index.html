@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Manu Car Deals — Nakuru, Kenya</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+  :root{
+    --asphalt:#1B1813;
+    --asphalt-2:#262119;
+    --paper:#F5EEE1;
+    --paper-2:#EBE1CE;
+    --murram:#C2511F;
+    --murram-dark:#9c3f17;
+    --savanna:#E8B23D;
+    --matatu:#34503D;
+    --matatu-dark:#243a2c;
+    --ink:#1B1813;
+    --line: rgba(27,24,19,0.14);
+    --font-display:'Oswald', sans-serif;
+    --font-body:'Inter', sans-serif;
+    --font-mono:'Space Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-body);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    pointer-events:none;
+    opacity:0.035;
+    background-image:radial-gradient(circle, #000 1px, transparent 1px);
+    background-size:4px 4px;
+    z-index:0;
+  }
+  h1,h2,h3,h4{font-family:var(--font-display); margin:0; text-transform:uppercase; letter-spacing:0.01em;}
+  a{color:inherit;}
+  button{font-family:var(--font-body); cursor:pointer;}
+  img{display:block; max-width:100%;}
+  .mono{font-family:var(--font-mono);}
+  .wrap{max-width:1100px; margin:0 auto; padding:0 20px;}
+  .eyebrow{
+    font-family:var(--font-mono); font-size:12px; letter-spacing:0.18em;
+    text-transform:uppercase; color:var(--murram); font-weight:700;
+  }
+
+  /* ===== Topbar ===== */
+  #topbar{
+    position:sticky; top:0; z-index:40;
+    background:var(--asphalt); color:var(--paper);
+    border-bottom:3px solid var(--murram);
+  }
+  #topbar .wrap{display:flex; align-items:center; justify-content:space-between; height:64px;}
+  .brandmark{display:flex; align-items:center; gap:10px; cursor:pointer; font-family:var(--font-display); font-size:20px; letter-spacing:0.02em;}
+  .brandmark .dot{width:10px;height:10px;background:var(--savanna);border-radius:50%;}
+  .menu-btn{
+    background:transparent; border:1px solid rgba(245,238,225,0.3); color:var(--paper);
+    border-radius:6px; padding:8px 10px; display:flex; align-items:center; gap:8px;
+  }
+  .menu-btn:hover{border-color:var(--savanna); color:var(--savanna);}
+
+  /* ===== Off canvas nav ===== */
+  #navmask{position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:50; opacity:0; pointer-events:none; transition:opacity .25s;}
+  #navmask.open{opacity:1; pointer-events:auto;}
+  #navpanel{
+    position:fixed; top:0; right:0; height:100%; width:300px; max-width:85vw;
+    background:var(--asphalt); color:var(--paper); z-index:51;
+    transform:translateX(100%); transition:transform .3s ease;
+    display:flex; flex-direction:column; padding:22px 20px; overflow-y:auto;
+  }
+  #navpanel.open{transform:translateX(0);}
+  #navpanel .nav-close{align-self:flex-end; background:none;border:none;color:var(--paper);}
+  .nav-link{
+    display:block; padding:12px 4px; font-family:var(--font-display);
+    font-size:18px; text-transform:uppercase; letter-spacing:0.03em;
+    border-bottom:1px solid rgba(245,238,225,0.12); background:none; border-top:none; border-left:none; border-right:none;
+    color:var(--paper); width:100%; text-align:left;
+  }
+  .nav-link:hover{color:var(--savanna);}
+  .nav-sub{padding-left:14px; font-size:14px; font-family:var(--font-body); text-transform:none; color:rgba(245,238,225,0.75); border:none; padding-top:8px; padding-bottom:8px;}
+  .nav-sub .dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:8px;}
+  .nav-label{font-family:var(--font-mono); font-size:11px; letter-spacing:0.15em; color:var(--savanna); margin:18px 0 4px; text-transform:uppercase;}
+
+  /* ===== Admin bar ===== */
+  #adminbar{
+    background:var(--matatu); color:var(--paper); font-family:var(--font-mono); font-size:12px;
+    text-align:center; padding:8px 10px; display:none; align-items:center; justify-content:center; gap:14px;
+  }
+  #adminbar.show{display:flex;}
+  #adminbar button{background:var(--paper); color:var(--matatu-dark); border:none; padding:4px 10px; border-radius:4px; font-family:var(--font-mono); font-weight:700; font-size:11px;}
+
+  /* ===== Hero ===== */
+  .hero{position:relative; overflow:hidden; background:var(--asphalt); color:var(--paper); padding:56px 0 64px;}
+  .hero .wrap{display:grid; grid-template-columns:1.1fr 1fr; gap:40px; align-items:center; position:relative; z-index:1;}
+  .hero h1{font-size:44px; line-height:1.04; color:var(--paper);}
+  .hero h1 span{color:var(--savanna);}
+  .hero p.lead{margin-top:16px; font-size:16px; color:rgba(245,238,225,0.85); max-width:46ch;}
+  .sash{
+    display:inline-block; background:var(--murram); color:#fff; font-family:var(--font-mono);
+    font-size:11px; letter-spacing:0.14em; padding:5px 12px; transform:rotate(-2deg);
+    margin-bottom:18px; text-transform:uppercase;
+  }
+  .cta-row{display:flex; gap:12px; margin-top:26px; flex-wrap:wrap;}
+  .btn{
+    display:inline-flex; align-items:center; gap:8px; font-family:var(--font-display);
+    text-transform:uppercase; letter-spacing:0.03em; font-size:14px; font-weight:600;
+    padding:13px 22px; border-radius:4px; border:2px solid transparent; transition:transform .15s, box-shadow .15s;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{background:var(--murram); color:#fff; box-shadow:3px 3px 0 var(--murram-dark);}
+  .btn-primary:hover{box-shadow:5px 5px 0 var(--murram-dark); transform:translate(-1px,-1px);}
+  .btn-whatsapp{background:var(--matatu); color:#fff; box-shadow:3px 3px 0 var(--matatu-dark);}
+  .btn-whatsapp:hover{box-shadow:5px 5px 0 var(--matatu-dark); transform:translate(-1px,-1px);}
+  .btn-ghost{background:transparent; border-color:rgba(245,238,225,0.4); color:var(--paper);}
+  .btn-ghost:hover{border-color:var(--savanna); color:var(--savanna);}
+  .btn-dark{background:var(--asphalt); color:#fff; box-shadow:3px 3px 0 #000;}
+
+  /* ===== Image rectangle / uploadable ===== */
+  .rect{
+    position:relative; background:var(--paper-2); border:2px solid var(--asphalt);
+    border-radius:8px; overflow:hidden; aspect-ratio:4/3; display:flex; align-items:center; justify-content:center;
+  }
+  .rect img{width:100%; height:100%; object-fit:cover;}
+  .rect .placeholder{display:flex; flex-direction:column; align-items:center; gap:8px; color:rgba(27,24,19,0.4); font-family:var(--font-mono); font-size:12px; text-align:center; padding:10px;}
+  .upload-overlay{
+    position:absolute; inset:0; background:rgba(27,24,19,0.55); display:none;
+    align-items:center; justify-content:center; flex-direction:column; gap:8px;
+  }
+  .is-admin .upload-overlay{display:flex;}
+  .upload-overlay label{
+    background:var(--savanna); color:var(--asphalt); font-family:var(--font-mono); font-weight:700;
+    font-size:12px; padding:8px 14px; border-radius:4px; cursor:pointer; text-transform:uppercase; letter-spacing:0.06em;
+  }
+  .upload-overlay input[type=file]{display:none;}
+  .upload-overlay .tip{color:#fff; font-size:11px; font-family:var(--font-mono); opacity:0.8;}
+
+  /* hero image plate caption */
+  .hero-figure{position:relative;}
+  .plate-badge{
+    position:absolute; bottom:-14px; left:18px; background:#fff; color:var(--ink);
+    border:3px solid var(--ink); border-radius:4px; padding:5px 12px; font-family:var(--font-mono);
+    font-weight:700; font-size:12px; letter-spacing:0.08em; box-shadow:3px 3px 0 var(--ink); z-index:2;
+  }
+
+  /* ===== Sections ===== */
+  section{padding:60px 0; position:relative; z-index:1;}
+  .section-head{margin-bottom:28px;}
+  .section-head h2{font-size:30px; margin-top:6px;}
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:center;}
+  .panel{background:var(--paper-2); border:2px solid var(--asphalt); border-radius:10px; padding:26px;}
+  .text-block p{color:rgba(27,24,19,0.8); font-size:15.5px;}
+
+  /* features */
+  .feat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:30px;}
+  .feat{background:var(--paper); border:2px solid var(--asphalt); border-radius:8px; padding:18px 14px; text-align:center; box-shadow:3px 3px 0 var(--asphalt);}
+  .feat .ic{width:36px; height:36px; margin:0 auto 10px; color:var(--murram);}
+  .feat h4{font-size:13px; text-transform:uppercase; letter-spacing:0.03em;}
+
+  /* why list */
+  .why-list{list-style:none; margin:22px 0 0; padding:0; display:flex; flex-direction:column; gap:16px;}
+  .why-list li{display:flex; gap:14px; align-items:flex-start;}
+  .why-list .num{font-family:var(--font-mono); font-weight:700; color:var(--murram); font-size:13px; border:2px solid var(--murram); border-radius:50%; width:28px; height:28px; flex:none; display:flex; align-items:center; justify-content:center;}
+  .why-list h4{font-size:15px; text-transform:none; font-family:var(--font-body); font-weight:700;}
+  .why-list p{margin:4px 0 0; font-size:14px; color:rgba(27,24,19,0.75);}
+
+  /* brand chooser grid */
+  .brand-grid{display:grid; grid-template-columns:repeat(6,1fr); gap:14px; margin-top:26px;}
+  .brand-tile{
+    background:var(--asphalt); border-radius:10px; padding:18px 10px; text-align:center;
+    color:var(--paper); border:2px solid var(--asphalt); transition:transform .15s, border-color .15s;
+  }
+  .brand-tile:hover{transform:translateY(-3px); border-color:var(--savanna);}
+  .brand-badge{
+    width:48px;height:48px; border-radius:50%; margin:0 auto 8px; display:flex; align-items:center; justify-content:center;
+    border:2px solid currentColor;
+  }
+  .brand-tile .bname{font-family:var(--font-display); font-size:12px; text-transform:uppercase; letter-spacing:0.04em;}
+
+  /* brand page */
+  .brand-hero{padding:40px 0 10px;}
+  .brand-hero .head-row{display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
+  .brand-hero .brand-badge{width:60px; height:60px;}
+  .bay-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:22px; margin-top:30px;}
+  .bay-card{background:var(--paper-2); border:2px solid var(--asphalt); border-radius:10px; overflow:hidden; box-shadow:4px 4px 0 var(--asphalt);}
+  .bay-head{display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--asphalt); color:var(--paper);}
+  .bay-head .bay-eyebrow{font-family:var(--font-mono); font-size:11px; letter-spacing:0.12em; color:var(--savanna);}
+  .bay-images{position:relative;}
+  .bay-thumbrow{display:flex; gap:6px; padding:8px; background:var(--paper-2);}
+  .thumb-rect{flex:1; aspect-ratio:1; border-radius:6px; border:2px solid var(--asphalt); overflow:hidden; cursor:pointer; opacity:0.55; position:relative;}
+  .thumb-rect.active{opacity:1; box-shadow:0 0 0 2px var(--savanna);}
+  .thumb-rect img{width:100%;height:100%;object-fit:cover;}
+  .bay-body{padding:14px;}
+  .tagrow{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:12px;}
+  .plate{
+    background:#fff; color:var(--ink); border:3px solid var(--ink); border-radius:4px;
+    padding:6px 12px; font-family:var(--font-mono); font-weight:700; letter-spacing:0.05em; font-size:14px;
+    box-shadow:2px 2px 0 var(--ink);
+  }
+  .price-tag{
+    background:var(--savanna); color:var(--asphalt); border:3px solid var(--asphalt); border-radius:4px;
+    padding:6px 12px; font-family:var(--font-mono); font-weight:700; font-size:14px; box-shadow:2px 2px 0 var(--asphalt);
+  }
+  .edit-field{
+    border:2px dashed var(--murram); background:#fff; border-radius:4px; padding:6px 10px;
+    font-family:var(--font-mono); font-size:13px; width:100%;
+  }
+  .field-label{font-size:10px; font-family:var(--font-mono); letter-spacing:0.1em; color:rgba(27,24,19,0.5); text-transform:uppercase; margin-bottom:4px;}
+
+  /* form */
+  form.card-form{background:var(--paper-2); border:2px solid var(--asphalt); border-radius:10px; padding:26px; max-width:520px;}
+  .form-row{margin-bottom:16px;}
+  .form-row label{display:block; font-family:var(--font-mono); font-size:11px; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:6px; color:rgba(27,24,19,0.7);}
+  .form-row input, .form-row select, .form-row textarea{
+    width:100%; padding:11px 12px; border:2px solid var(--asphalt); border-radius:6px; font-family:var(--font-body); font-size:14px; background:#fff;
+  }
+
+  /* login */
+  .login-wrap{max-width:380px; margin:60px auto; text-align:center;}
+  .login-wrap .plate{display:inline-block; margin-bottom:18px;}
+
+  footer{background:var(--asphalt); color:rgba(245,238,225,0.7); padding:40px 0 26px; font-size:13px;}
+  footer .wrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:20px;}
+  footer .fcol h4{color:var(--paper); font-size:13px; margin-bottom:10px;}
+  footer a:hover{color:var(--savanna);}
+  .toast{
+    position:fixed; bottom:18px; left:50%; transform:translateX(-50%) translateY(20px); z-index:60;
+    background:var(--matatu); color:#fff; padding:10px 18px; border-radius:6px; font-family:var(--font-mono); font-size:12px;
+    opacity:0; transition:all .25s; pointer-events:none;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  @media (max-width:880px){
+    .hero .wrap{grid-template-columns:1fr;}
+    .hero h1{font-size:32px;}
+    .two-col{grid-template-columns:1fr;}
+    .feat-grid{grid-template-columns:repeat(2,1fr);}
+    .brand-grid{grid-template-columns:repeat(3,1fr);}
+    .bay-grid{grid-template-columns:1fr;}
+    footer .wrap{flex-direction:column;}
+  }
+</style>
+</head>
+<body>
+
+<div id="adminbar">
+  <span><i data-lucide="shield-check" style="width:14px;height:14px;vertical-align:-2px;"></i> Admin mode — tap any photo, type or price to edit</span>
+  <button data-action="logout">Exit admin</button>
+</div>
+
+<header id="topbar">
+  <div class="wrap">
+    <div class="brandmark" data-action="nav" data-route="home"><span class="dot"></span>Manu Car Deals</div>
+    <button class="menu-btn" data-action="toggle-menu"><i data-lucide="menu" style="width:18px;height:18px;"></i> Menu</button>
+  </div>
+</header>
+
+<div id="navmask" data-action="toggle-menu"></div>
+<nav id="navpanel">
+  <button class="nav-close" data-action="toggle-menu"><i data-lucide="x" style="width:22px;height:22px;"></i></button>
+  <button class="nav-link" data-action="nav" data-route="home"><i data-lucide="home" style="width:15px;height:15px;vertical-align:-2px;margin-right:6px;"></i>Home</button>
+  <button class="nav-link" data-action="nav" data-route="why">Why Choose Us</button>
+  <button class="nav-link" data-action="nav" data-route="about">About Us</button>
+  <button class="nav-link" data-action="nav" data-route="testdrive">Book a Test Drive</button>
+  <div class="nav-label">Browse cars</div>
+  <div id="nav-brand-list"></div>
+  <div class="nav-label">Owner</div>
+  <div id="nav-admin-slot"></div>
+</nav>
+
+<main id="app"></main>
+
+<footer>
+  <div class="wrap">
+    <div class="fcol">
+      <h4>Manu Car Deals</h4>
+      <div>Nakuru, Kenya</div>
+      <div>Serving Nairobi · Mombasa · Eldoret</div>
+      <div>Happy customers since 2007</div>
+    </div>
+    <div class="fcol">
+      <h4>Talk to us</h4>
+      <div><a href="https://wa.me/254115531131" target="_blank" rel="noopener">WhatsApp: 0115 531 131</a></div>
+      <div style="margin-top:6px;"><button class="nav-link" style="padding:0;border:none;font-size:13px;text-transform:none;font-family:inherit;" data-action="nav" data-route="login">Owner login</button></div>
+    </div>
+    <div class="fcol">
+      <h4>Pages</h4>
+      <div><button class="nav-link" style="padding:0;border:none;font-size:13px;text-transform:none;font-family:inherit;" data-action="nav" data-route="why">Why Choose Us</button></div>
+      <div style="margin-top:6px;"><button class="nav-link" style="padding:0;border:none;font-size:13px;text-transform:none;font-family:inherit;" data-action="nav" data-route="about">About Us</button></div>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== DATA ===================== */
+const BRANDS = [
+  {slug:'toyota', name:'Toyota', accent:'#C2511F'},
+  {slug:'mazda', name:'Mazda', accent:'#34503D'},
+  {slug:'subaru', name:'Subaru', accent:'#1B5E8A'},
+  {slug:'nissan', name:'Nissan', accent:'#A3171A'},
+  {slug:'honda', name:'Honda', accent:'#1B1813'},
+  {slug:'mitsubishi', name:'Mitsubishi', accent:'#7A2E8C'},
+];
+const ADMIN_PASSWORD = 'manu@12345';
+const WHATSAPP_NUMBER = '254115531131';
+
+function defaultContent(){
+  return {
+    heroImage:null,
+    aboutImage:null,
+    whyImage:null,
+    heroTagline:"Discover Your Dream Car in Kenya — Quality Vehicles, Honest Prices!",
+  };
+}
+function defaultListings(){
+  return Array.from({length:5}, ()=>({type:'', price:'', images:[null,null,null]}));
+}
+
+let state = {
+  isAdmin:false,
+  menuOpen:false,
+  route:'home',
+  brandSlug:null,
+  content: defaultContent(),
+  listings:{}, // slug -> array(5)
+  loading:true,
+};
+BRANDS.forEach(b=> state.listings[b.slug] = defaultListings());
+
+/* ===================== STORAGE ===================== */
+async function loadAll(){
+  try{
+    const r = await window.storage.get('site-content', true);
+    if(r && r.value) state.content = Object.assign(defaultContent(), JSON.parse(r.value));
+  }catch(e){ /* not found yet, keep defaults */ }
+
+  await Promise.all(BRANDS.map(async b=>{
+    try{
+      const r = await window.storage.get('listings-'+b.slug, true);
+      if(r && r.value){
+        const parsed = JSON.parse(r.value);
+        state.listings[b.slug] = parsed;
+      }
+    }catch(e){ /* keep defaults */ }
+  }));
+  state.loading = false;
+}
+async function saveContent(){
+  try{ await window.storage.set('site-content', JSON.stringify(state.content), true); showToast('Saved'); }
+  catch(e){ showToast('Could not save — try again'); }
+}
+async function saveListings(slug){
+  try{ await window.storage.set('listings-'+slug, JSON.stringify(state.listings[slug]), true); showToast('Saved'); }
+  catch(e){ showToast('Could not save — try again'); }
+}
+
+/* ===================== HELPERS ===================== */
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(()=> t.classList.remove('show'), 1800);
+}
+function waLink(message){
+  return 'https://wa.me/'+WHATSAPP_NUMBER+'?text='+encodeURIComponent(message);
+}
+function compressImage(file, maxW=720, quality=0.62){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = e=>{
+      const img = new Image();
+      img.onload = ()=>{
+        let w = img.width, h = img.height;
+        if(w > maxW){ h = Math.round(h * (maxW / w)); w = maxW; }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+function carIconSvg(){
+  return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 13l1.5-4.5A2 2 0 0 1 6.4 7h11.2a2 2 0 0 1 1.9 1.5L21 13"/><path d="M3 13h18v4a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H6v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-4Z"/><circle cx="7.5" cy="16.5" r="1.5"/><circle cx="16.5" cy="16.5" r="1.5"/></svg>';
+}
+
+/* ===================== NAV ===================== */
+function buildNavBrandList(){
+  const el = document.getElementById('nav-brand-list');
+  el.innerHTML = BRANDS.map(b=>`
+    <button class="nav-link nav-sub" data-action="nav" data-route="brand" data-brand="${b.slug}">
+      <span class="dot" style="background:${b.accent}"></span>${b.name}
+    </button>`).join('');
+}
+function buildAdminSlot(){
+  const el = document.getElementById('nav-admin-slot');
+  if(state.isAdmin){
+    el.innerHTML = `<button class="nav-link nav-sub" data-action="logout"><i data-lucide="log-out" style="width:13px;height:13px;vertical-align:-2px;margin-right:6px;"></i>Log out of admin</button>`;
+  } else {
+    el.innerHTML = `<button class="nav-link nav-sub" data-action="nav" data-route="login"><i data-lucide="lock" style="width:13px;height:13px;vertical-align:-2px;margin-right:6px;"></i>Owner login</button>`;
+  }
+  lucide.createIcons();
+}
+function toggleMenu(){
+  state.menuOpen = !state.menuOpen;
+  document.getElementById('navmask').classList.toggle('open', state.menuOpen);
+  document.getElementById('navpanel').classList.toggle('open', state.menuOpen);
+}
+function navigate(route, brand){
+  state.route = route;
+  state.brandSlug = brand || null;
+  state.menuOpen = false;
+  document.getElementById('navmask').classList.remove('open');
+  document.getElementById('navpanel').classList.remove('open');
+  window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
+  render();
+}
+
+/* ===================== UPLOAD RECTANGLE ===================== */
+function rectHTML({uploadKey, src, placeholderText, ratio}){
+  const img = src ? `<img src="${src}" alt="">` : `<div class="placeholder">${carIconSvg()}<span>${placeholderText||'Photo coming soon'}</span></div>`;
+  return `
+    <div class="rect" ${ratio?`style="aspect-ratio:${ratio}"`:''}>
+      ${img}
+      <div class="upload-overlay">
+        <label>
+          <i data-lucide="upload" style="width:14px;height:14px;vertical-align:-2px;margin-right:5px;"></i>${src?'Replace photo':'Upload photo'}
+          <input type="file" accept="image/*" data-upload="${uploadKey}">
+        </label>
+        <span class="tip">JPG or PNG</span>
+      </div>
+    </div>`;
+}
+
+/* ===================== VIEWS ===================== */
+function viewHome(){
+  const c = state.content;
+  return `
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <span class="sash">Trusted dealer · Nakuru, Kenya</span>
+        <h1>${c.heroTagline.split('—')[0]}<br><span>— ${c.heroTagline.split('—')[1]||'Quality Vehicles, Honest Prices!'}</span></h1>
+        <p class="lead">Karibu! From reliable Toyota Prados to sleek sedans and family SUVs, we bring you the best used and imported cars in Nairobi and beyond — handpicked vehicles that match Kenyan roads and your budget.</p>
+        <div class="cta-row">
+          <button class="btn btn-primary" data-action="nav" data-route="why-cars-cta"><i data-lucide="search" style="width:15px;height:15px;"></i>Browse Our Cars</button>
+          <a class="btn btn-whatsapp" href="${waLink('Hi Manu Car Deals, I would like to know more about your cars.')}" target="_blank" rel="noopener"><i data-lucide="message-circle" style="width:15px;height:15px;"></i>Contact Us on WhatsApp</a>
+        </div>
+      </div>
+      <div class="hero-figure">
+        ${rectHTML({uploadKey:'content:heroImage', src:c.heroImage, placeholderText:'Upload a hero photo of the yard'})}
+        <div class="plate-badge mono">KCD · EST 2007</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="browse">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Inventory</span>
+        <h2>Browse by brand</h2>
+      </div>
+      <div class="brand-grid">
+        ${BRANDS.map(b=>`
+          <button class="brand-tile" data-action="nav" data-route="brand" data-brand="${b.slug}" style="color:${b.accent}">
+            <div class="brand-badge" style="color:${b.accent}">${carIconSvg()}</div>
+            <div class="bname" style="color:${b.accent==='#1B1813'?'#fff':'#fff'}">${b.name}</div>
+          </button>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <section style="background:var(--paper-2); border-top:2px solid var(--asphalt); border-bottom:2px solid var(--asphalt);">
+    <div class="wrap feat-grid">
+      <div class="feat"><i data-lucide="shield-check" class="ic"></i><h4>Verified &amp; Inspected</h4></div>
+      <div class="feat"><i data-lucide="tag" class="ic"></i><h4>Competitive Prices</h4></div>
+      <div class="feat"><i data-lucide="truck" class="ic"></i><h4>Delivery Across Kenya</h4></div>
+      <div class="feat"><i data-lucide="heart" class="ic"></i><h4>Happy Customers Since 2007</h4></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap two-col">
+      <div class="text-block">
+        <span class="eyebrow">About Manu Car Deals</span>
+        <h2>Your trusted car partner in Kenya</h2>
+        <p>We know what Kenyans need: durable cars that handle city traffic, upcountry roads, and everything in between. Based in Nakuru, we serve customers from Mombasa, Nairobi to Eldoret — with integrity, excellent after-sales service, and flexible financing options.</p>
+        <div class="cta-row">
+          <button class="btn btn-dark" data-action="nav" data-route="about">About Us</button>
+          <button class="btn btn-ghost" style="border-color:var(--asphalt); color:var(--asphalt);" data-action="nav" data-route="why">Why Choose Us</button>
+          <button class="btn btn-ghost" style="border-color:var(--asphalt); color:var(--asphalt);" data-action="nav" data-route="testdrive">Book a Test Drive</button>
+        </div>
+      </div>
+      <div>${rectHTML({uploadKey:'content:aboutImage', src:c.aboutImage, placeholderText:'Upload a showroom / team photo'})}</div>
+    </div>
+  </section>
+  `;
+}
+
+function viewWhy(){
+  const items = [
+    {t:'Wide selection of popular models', d:'Toyota, Nissan, Honda, Subaru, Mazda, Mitsubishi & more — all in one yard.'},
+    {t:'Full vehicle history & inspection reports', d:'Every car is checked before it reaches you, so there are no surprises.'},
+    {t:'Owner-managed for personal attention', d:'You deal directly with us, not a call centre — every sale gets personal care.'},
+    {t:'Easy online browsing, real-time updates', d:'Photos and prices are kept current through our secure owner portal.'},
+  ];
+  return `
+  <section class="brand-hero">
+    <div class="wrap">
+      <span class="eyebrow">Why Choose Us</span>
+      <h2 style="font-size:30px; margin-top:6px;">Built for Kenyan roads &amp; Kenyan budgets</h2>
+    </div>
+  </section>
+  <section style="padding-top:10px;">
+    <div class="wrap two-col">
+      <div>${rectHTML({uploadKey:'content:whyImage', src:state.content.whyImage, placeholderText:'Upload a lineup / lot photo'})}</div>
+      <div>
+        <ul class="why-list">
+          ${items.map((it,i)=>`
+            <li>
+              <span class="num">${i+1}</span>
+              <div><h4>${it.t}</h4><p>${it.d}</p></div>
+            </li>`).join('')}
+        </ul>
+        <div class="cta-row" style="margin-top:26px;">
+          <button class="btn btn-primary" data-action="nav" data-route="brand" data-brand="toyota">See Our Cars</button>
+          <a class="btn btn-whatsapp" href="${waLink('Hi, I have a question about Manu Car Deals.')}" target="_blank" rel="noopener">WhatsApp Us</a>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function viewAbout(){
+  return `
+  <section class="brand-hero">
+    <div class="wrap">
+      <span class="eyebrow">About Us</span>
+      <h2 style="font-size:30px; margin-top:6px;">About Manu Car Deals</h2>
+    </div>
+  </section>
+  <section style="padding-top:10px;">
+    <div class="wrap two-col">
+      <div class="text-block">
+        <p>Karibu! From reliable Toyota Prados to sleek sedans and family SUVs, we bring you the best used and imported cars in Nairobi and beyond. We're a trusted dealer with handpicked vehicles that match Kenyan roads and your budget.</p>
+        <p>At Manu Car Deals, we know what Kenyans need: durable cars that handle city traffic, upcountry roads, and everything in between. We specialise in popular brands like Toyota, Mazda, Subaru, Nissan, Honda and Mitsubishi.</p>
+        <p>Located in Nakuru, we serve customers from Mombasa, Nairobi to Eldoret with integrity, excellent after-sales service, and flexible financing options.</p>
+        <div class="cta-row" style="margin-top:10px;">
+          <a class="btn btn-whatsapp" href="${waLink('Hi Manu Car Deals, I would like more information.')}" target="_blank" rel="noopener">Contact Us on WhatsApp</a>
+        </div>
+      </div>
+      <div>${rectHTML({uploadKey:'content:aboutImage', src:state.content.aboutImage, placeholderText:'Upload a showroom / team photo'})}</div>
+    </div>
+  </section>`;
+}
+
+function viewTestDrive(){
+  return `
+  <section class="brand-hero">
+    <div class="wrap">
+      <span class="eyebrow">Book a Test Drive</span>
+      <h2 style="font-size:30px; margin-top:6px;">Tell us which car you'd like to try</h2>
+    </div>
+  </section>
+  <section style="padding-top:10px;">
+    <div class="wrap">
+      <form class="card-form" id="testdrive-form">
+        <div class="form-row">
+          <label>Your name</label>
+          <input type="text" id="td-name" required placeholder="e.g. Wanjiru Kamau">
+        </div>
+        <div class="form-row">
+          <label>Phone number</label>
+          <input type="tel" id="td-phone" required placeholder="07xx xxx xxx">
+        </div>
+        <div class="form-row">
+          <label>Brand you're interested in</label>
+          <select id="td-brand">
+            ${BRANDS.map(b=>`<option value="${b.name}">${b.name}</option>`).join('')}
+            <option value="Not sure yet">Not sure yet</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Preferred date</label>
+          <input type="date" id="td-date">
+        </div>
+        <button type="submit" class="btn btn-whatsapp" style="width:100%; justify-content:center;">
+          <i data-lucide="message-circle" style="width:15px;height:15px;"></i>Send via WhatsApp
+        </button>
+      </form>
+    </div>
+  </section>`;
+}
+
+function viewBrand(slug){
+  const brand = BRANDS.find(b=>b.slug===slug) || BRANDS[0];
+  const listing = state.listings[brand.slug];
+  return `
+  <section class="brand-hero">
+    <div class="wrap">
+      <div class="head-row">
+        <div class="brand-badge" style="color:${brand.accent}">${carIconSvg()}</div>
+        <div>
+          <span class="eyebrow" style="color:${brand.accent}">5 in stock</span>
+          <h2 style="font-size:28px;">${brand.name}</h2>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section style="padding-top:6px;">
+    <div class="wrap">
+      <div class="bay-grid">
+        ${listing.map((car, idx)=> bayCardHTML(brand, car, idx)).join('')}
+      </div>
+    </div>
+  </section>`;
+}
+
+function bayCardHTML(brand, car, idx){
+  const activeIdx = car.__active || 0;
+  const mainImg = car.images[activeIdx];
+  const typeDisplay = car.type && car.type.trim() ? car.type : 'Type not listed yet';
+  const priceDisplay = car.price && car.price.trim() ? car.price : 'POA';
+  const waMsg = `Hi, I'm interested in the ${brand.name} (Bay ${String(idx+1).padStart(2,'0')}) — ${typeDisplay}, listed at ${priceDisplay}. Is it still available?`;
+  return `
+  <div class="bay-card">
+    <div class="bay-head">
+      <span class="bay-eyebrow">BAY ${String(idx+1).padStart(2,'0')}</span>
+      <span class="bay-eyebrow">${brand.name.toUpperCase()}</span>
+    </div>
+    <div class="bay-images">
+      ${rectHTML({uploadKey:`listing:${brand.slug}:${idx}:${activeIdx}`, src:mainImg, placeholderText:'Photo '+(activeIdx+1)+' of 3', ratio:'4/3'})}
+      <div class="bay-thumbrow">
+        ${[0,1,2].map(i=>`
+          <div class="thumb-rect ${i===activeIdx?'active':''}" data-action="set-active" data-brand="${brand.slug}" data-idx="${idx}" data-img="${i}">
+            ${car.images[i] ? `<img src="${car.images[i]}">` : `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:rgba(27,24,19,0.35);font-family:var(--font-mono);font-size:10px;">${i+1}</div>`}
+          </div>`).join('')}
+      </div>
+    </div>
+    <div class="bay-body">
+      ${state.isAdmin ? `
+        <div class="form-row">
+          <div class="field-label">Type / model</div>
+          <input class="edit-field" data-field="type" data-brand="${brand.slug}" data-idx="${idx}" value="${car.type||''}" placeholder="e.g. Toyota Premio 2014">
+        </div>
+        <div class="form-row" style="margin-bottom:14px;">
+          <div class="field-label">Price (KES)</div>
+          <input class="edit-field" data-field="price" data-brand="${brand.slug}" data-idx="${idx}" value="${car.price||''}" placeholder="e.g. 1,450,000">
+        </div>
+      ` : `
+        <div class="tagrow">
+          <span class="plate">${typeDisplay}</span>
+          <span class="price-tag">${priceDisplay}</span>
+        </div>
+      `}
+      <a class="btn btn-whatsapp" style="width:100%; justify-content:center;" href="${waLink(waMsg)}" target="_blank" rel="noopener">
+        <i data-lucide="message-circle" style="width:14px;height:14px;"></i>Negotiate on WhatsApp
+      </a>
+    </div>
+  </div>`;
+}
+
+function viewLogin(){
+  if(state.isAdmin){
+    return `
+    <section class="login-wrap">
+      <div class="plate">LOGGED IN</div>
+      <h2 style="font-size:22px;">You're in admin mode</h2>
+      <p style="color:rgba(27,24,19,0.7); margin:10px 0 20px;">Browse to any page — every photo, type and price field is now editable.</p>
+      <button class="btn btn-dark" data-action="nav" data-route="home">Go to Home</button>
+    </section>`;
+  }
+  return `
+  <section class="login-wrap">
+    <div class="plate">OWNER ACCESS</div>
+    <h2 style="font-size:22px;">Log in to manage listings</h2>
+    <form class="card-form" id="login-form" style="margin:22px auto 0; text-align:left;">
+      <div class="form-row">
+        <label>Owner password</label>
+        <input type="password" id="login-pass" required placeholder="••••••••">
+      </div>
+      <div id="login-error" style="display:none; color:var(--murram); font-family:var(--font-mono); font-size:12px; margin-bottom:12px;">Incorrect password. Try again.</div>
+      <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Log In</button>
+    </form>
+  </section>`;
+}
+
+function viewLoading(){
+  return `<section><div class="wrap" style="text-align:center; padding:80px 0; font-family:var(--font-mono); color:rgba(27,24,19,0.5);">Loading inventory…</div></section>`;
+}
+
+/* ===================== RENDER ===================== */
+function render(){
+  document.body.classList.toggle('is-admin', state.isAdmin);
+  document.getElementById('adminbar').classList.toggle('show', state.isAdmin);
+  buildNavBrandList();
+  buildAdminSlot();
+
+  const app = document.getElementById('app');
+  if(state.loading){ app.innerHTML = viewLoading(); return; }
+
+  let route = state.route;
+  if(route === 'why-cars-cta') route = 'brand', state.brandSlug = state.brandSlug || 'toyota';
+
+  let html = '';
+  if(route === 'home') html = viewHome();
+  else if(route === 'why') html = viewWhy();
+  else if(route === 'about') html = viewAbout();
+  else if(route === 'testdrive') html = viewTestDrive();
+  else if(route === 'brand') html = viewBrand(state.brandSlug || 'toyota');
+  else if(route === 'login') html = viewLogin();
+  else html = viewHome();
+
+  app.innerHTML = html;
+  lucide.createIcons();
+  attachFormHandlers();
+}
+
+/* ===================== EVENTS ===================== */
+document.addEventListener('click', async (e)=>{
+  const navEl = e.target.closest('[data-action="nav"]');
+  if(navEl){
+    e.preventDefault();
+    navigate(navEl.dataset.route, navEl.dataset.brand);
+    return;
+  }
+  if(e.target.closest('[data-action="toggle-menu"]')){
+    toggleMenu();
+    return;
+  }
+  if(e.target.id === 'navmask'){
+    toggleMenu();
+    return;
+  }
+  if(e.target.closest('[data-action="logout"]')){
+    state.isAdmin = false;
+    render();
+    showToast('Logged out of admin mode');
+    return;
+  }
+  const setActive = e.target.closest('[data-action="set-active"]');
+  if(setActive){
+    const {brand, idx, img} = setActive.dataset;
+    state.listings[brand][idx].__active = parseInt(img,10);
+    render();
+    return;
+  }
+});
+
+document.addEventListener('change', async (e)=>{
+  // Image upload
+  if(e.target.matches('input[type=file][data-upload]')){
+    const key = e.target.dataset.upload;
+    const file = e.target.files[0];
+    if(!file) return;
+    showToast('Uploading…');
+    try{
+      const dataUrl = await compressImage(file);
+      if(key.startsWith('content:')){
+        const field = key.split(':')[1];
+        state.content[field] = dataUrl;
+        await saveContent();
+      } else if(key.startsWith('listing:')){
+        const [, slug, idxStr, imgStr] = key.split(':');
+        const idx = parseInt(idxStr,10), imgIdx = parseInt(imgStr,10);
+        state.listings[slug][idx].images[imgIdx] = dataUrl;
+        state.listings[slug][idx].__active = imgIdx;
+        await saveListings(slug);
+      }
+      render();
+    }catch(err){
+      showToast('Upload failed — try a smaller photo');
+    }
+    return;
+  }
+});
+
+document.addEventListener('blur', async (e)=>{
+  if(e.target.matches('.edit-field[data-field]')){
+    const {field, brand, idx} = e.target.dataset;
+    state.listings[brand][idx][field] = e.target.value;
+    await saveListings(brand);
+  }
+}, true);
+
+function attachFormHandlers(){
+  const loginForm = document.getElementById('login-form');
+  if(loginForm){
+    loginForm.addEventListener('submit', e=>{
+      e.preventDefault();
+      const val = document.getElementById('login-pass').value;
+      if(val === ADMIN_PASSWORD){
+        state.isAdmin = true;
+        navigate('home');
+        showToast('Welcome back — admin mode on');
+      } else {
+        document.getElementById('login-error').style.display = 'block';
+      }
+    });
+  }
+  const tdForm = document.getElementById('testdrive-form');
+  if(tdForm){
+    tdForm.addEventListener('submit', e=>{
+      e.preventDefault();
+      const name = document.getElementById('td-name').value;
+      const phone = document.getElementById('td-phone').value;
+      const brand = document.getElementById('td-brand').value;
+      const date = document.getElementById('td-date').value;
+      const msg = `Hi Manu Car Deals, I'd like to book a test drive.\nName: ${name}\nPhone: ${phone}\nBrand: ${brand}${date?`\nPreferred date: ${date}`:''}`;
+      window.open(waLink(msg), '_blank');
+    });
+  }
+}
+
+/* ===================== INIT ===================== */
+(async function init(){
+  render(); // show loading state
+  await loadAll();
+  render();
+})();
+</script>
+</body>
+</html>
